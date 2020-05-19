@@ -472,6 +472,9 @@
         box-shadow: 0px -1px 25px -5px rgba(0, 0, 0, 0.1);
       }
     }
+    .toast__cell > div {
+        opacity: 1;
+    }
     body{
       font-family: 'Poppins' !important;
     }
@@ -604,7 +607,7 @@
 {% endblock %}
 
 {% block body %}
-  <dir class="toast__container"></dir>
+  
    <div class="loader">
       <div class="loading-animation"></div>
     </div>
@@ -631,8 +634,8 @@
         
 
         <a class="navbar-brand navbar-brand-dynamic-color" href="{{path('home')}}">
-               <img src="https://imgur.com/JoDUDKQ.png" class="logo scrolled-logo" alt="logo">
-               <img src="https://imgur.com/zhUVFuo.png" class="logo default-logo" alt="logo">
+               <img src="{{asset('assets/img/logo-noir.png')}}" class="logo scrolled-logo" alt="logo">
+               <img src="{{asset('assets/img/logo-blanc.png')}}" class="logo default-logo" alt="logo">
         </a>
             <div class="d-flex align-items-center order-lg-3 right-close">
                <button aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target=".navbar-collapse" data-toggle="collapse" type="button">
@@ -655,7 +658,7 @@
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
               <li class="nav-item">
                 <div>
-                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="{{path('account')}}" role="button">Mon compte</a>
+                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item"  href="{{path('account')}}" role="button">Mon compte</a>
                 </div>
               </li>
             {% endif %}
@@ -1103,7 +1106,7 @@
                 name+
               '</li>'+
               '<li class="detail-item product-qte">'+
-               quantity+' x '+price+'€ <strike>'+quantity*oldprice+'€</strike>'+
+               quantity+' x '+price.toFixed(1)+'€ <strike>'+quantity*oldprice+'€</strike>'+
               '</li>'+
               '<li class="detail-item product-etat">'+
                 '<span style="color: #009b7 !important; cursor: pointer; font-weight: 700;" onclick="addToCard('+id+',0)">supprimé</span>'+
@@ -1142,17 +1145,32 @@
       addToCard(id,qty,"formule");
     }
   function synch_card(){
-    var x = window.localStorage.getItem('panier');
-    if(x){
-       prods = JSON.parse(x);
-
-       prods.forEach(function(item, index){
-          console.log("add "+item.type+" : "+item.id);
-          addToCard(item.id,item.qty,item.type);
+    $.ajax({
+         contentType: "application/json",
+         dataType: "json",
+         url: "{{ path('api_use_connected') }}",
+         beforeSend: function( xhr ) {
+          $('.btn-add-to-card').css('pointer-events','none');
+          $('.btn-add-to-card').text('Ajout...');
+         }
        })
+    .done(function( data ) {
+       if(data.status==200){
+          var x = window.localStorage.getItem('panier');
+          if(x){
+             prods = JSON.parse(x);
 
-       window.localStorage.removeItem('panier');
-    }
+             prods.forEach(function(item, index){
+                console.log("add "+item.type+" : "+item.id);
+                addToCard(item.id,item.qty,item.type);
+             })
+
+             window.localStorage.removeItem('panier');
+          }
+          
+       }
+    });
+    
   } 
   function addToCard(id=-1,qty=-1,type="product"){
     $.ajax({
@@ -1352,6 +1370,10 @@
                   $(".card-list-product").html("");
                    data.panier.products.forEach(function(item, index){
                      $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+
+                       if(typeof init_product_qty === "function" && item.price != 0){
+                            init_product_qty(item.id_product,item.quantity);
+                        }
                    }); 
                   $(".card-list-coupon").html("");
                    data.panier.coupons.forEach(function(item, index){
@@ -1637,6 +1659,7 @@
 <script type="text/javascript">
 
   function init_product_qty(id,qty){
+    console.log("Show quantity of product");
     $('#product-qty-'+id).html(qty);
     $('#product-'+id + " .add-product-card ").hide();
     $('#product-'+id + " .get_quantity ").show();
