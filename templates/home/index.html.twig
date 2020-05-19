@@ -105,7 +105,7 @@
       <div data-overlay class="bg-primary-3 jarallax text-white" data-jarallax data-speed="0.2">
         
          <section class="pb-0"> 
-          <img src="https://i.ya-webdesign.com/images/loading-gif-png-5.gif" data-srcset="{{asset('assets/img/home.jpeg')}} 1x"  alt="Background" class="jarallax-img lazy" data-src="{{asset('assets/img/home.jpeg')}}">
+          <img src="https://i.ya-webdesign.com/images/loading-gif-png-5.gif" data-srcset="{{asset('assets/img/home-min.jpeg')}} 1x"  alt="Background" class="jarallax-img lazy" data-src="{{asset('assets/img/home-min.jpeg')}}">
             <div class="container pb-5">
                <div class="row section-title justify-content-center text-center">
                   <div class="col-md-9 col-lg-8 col-xl-9">
@@ -821,38 +821,42 @@
 {% block javascripts %}
 {{parent()}}
   <script>
-    $.ajax({
-      url:"https://www.instagram.com/nutridia?__a=1",
-      type:'get',
-      success:function(response){
-        posts = response.graphql.user.edge_owner_to_timeline_media.edges;
-        posts_grid_bottom = posts_grid_left = posts_grid_right = '';
-        console.log(posts);
-        for(var i=0;i<posts.length;i++){
-          url = posts[i].node.display_url;
-          if(i == 0)
-            $(".img-thumb").html('<a href="'+url+'" target="_blank"><img src="'+url+'"></a>');
-          else if(i == 1)
-            $(".thumb-middle .image-center").html('<a href="'+url+'" target="_blank"><img src="'+url+'"></a>');
-          else{
-            if(i < 10){
+   $(document).ready(
+      function(){
+      $.ajax({
+            url:"https://www.instagram.com/nutridia?__a=1",
+            type:'get',
+            success:function(response){
+              posts = response.graphql.user.edge_owner_to_timeline_media.edges;
+              posts_grid_bottom = posts_grid_left = posts_grid_right = '';
+              console.log(posts);
+              for(var i=0;i<posts.length;i++){
+                url = posts[i].node.display_url;
+                if(i == 0)
+                  $(".img-thumb").html('<a href="'+url+'" target="_blank"><img src="'+url+'"></a>');
+                else if(i == 1)
+                  $(".thumb-middle .image-center").html('<a href="'+url+'" target="_blank"><img src="'+url+'"></a>');
+                else{
+                  if(i < 10){
 
-              if(i%2 == 0)
-                posts_grid_left += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';
-              else
-                posts_grid_right += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';
+                    if(i%2 == 0)
+                      posts_grid_left += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';
+                    else
+                      posts_grid_right += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';
+                  }
+                  else{
+                    posts_grid_bottom += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';  
+                  }
+                }
+              }
+              $(".image-grid.grid-left").html(posts_grid_left);
+              $(".image-grid.grid-right").html(posts_grid_right);
+              $(".image-grid.grid-bottom").html(posts_grid_bottom);
+              $(".thumb-middle .image-center").css('height', $(".image-grid.grid-left").height());
             }
-            else{
-              posts_grid_bottom += '<a href="'+url+'" target="_blank"><img src="'+url+'"></a>';  
-            }
-          }
-        }
-        $(".image-grid.grid-left").html(posts_grid_left);
-        $(".image-grid.grid-right").html(posts_grid_right);
-        $(".image-grid.grid-bottom").html(posts_grid_bottom);
-        $(".thumb-middle .image-center").css('height', $(".image-grid.grid-left").height());
-      }
-    });
+          });
+   });
+    
   </script>
 
 {% endblock %}
