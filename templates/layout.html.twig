@@ -1103,7 +1103,7 @@
             '<img src="{{asset("assets/img/products")}}/'+img+'" class="product-img">'+
             '<ul class="detail-list">'+
               '<li class="detail-item product-name">'+
-                name+
+               (parseInt(price.toFixed(1))? name : 'Offert : '+ name ) +
               '</li>'+
               '<li class="detail-item product-qte">'+
                quantity+' x '+price.toFixed(1)+'€ <strike>'+quantity*oldprice+'€</strike>'+
