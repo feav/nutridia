@@ -517,9 +517,20 @@
             max-width: 45%;
         }
       }
-      @media(max-width: 992px){
+      @media(max-width: 600px){
         .rowly > div {
-            max-width: 45%;
+            max-width: 100%;
+        }
+        a.toggle-cart.cart-btn {
+            padding: 5px 10px 5px 10px;
+        }
+        .navbar-collapse.order-3.order-lg-2.justify-content-lg-center.collapse.show{
+              background: rgb(185, 23, 81);
+        }
+        button.navbar-toggler {
+            background: #ffffff;
+            padding: 5px 10px 5px 10px;
+            color: black;
         }
       }
        .payment-list img {
@@ -594,9 +605,9 @@
 
 {% block body %}
   <dir class="toast__container"></dir>
-   <!--  <div class="loader">
+   <div class="loader">
       <div class="loading-animation"></div>
-    </div> -->
+    </div>
     <div style="display:none !important" class="alert alert-dismissible d-none d-md-block bg-primary-3 text-white py-4 py-md-3 px-0 mb-0 rounded-0 border-0" id="show-massage" >
       <div class="container">
           <div class="row no-gutters align-items-md-center justify-content-center">
@@ -1092,7 +1103,7 @@
                 name+
               '</li>'+
               '<li class="detail-item product-qte">'+
-               quantity+' x '+price+'€ <strike>'+oldprice+'€</strike>'+
+               quantity+' x '+price+'€ <strike>'+quantity*oldprice+'€</strike>'+
               '</li>'+
               '<li class="detail-item product-etat">'+
                 '<span style="color: #009b7 !important; cursor: pointer; font-weight: 700;" onclick="addToCard('+id+',0)">supprimé</span>'+
